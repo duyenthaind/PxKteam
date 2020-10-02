@@ -75,9 +75,11 @@ def addAttributesToObject(soup, object):
         elif li.find('span', class_="sp1").text == 'Diện tích:':
             try: object.acreage = li.find('span', class_="sp2").text
             except: pass
-
-    location = soup.find('div', class_='map').find('iframe').get('src')
-    object.location = location[location.index('q=') + 2:location.index('&')]
+    try:
+        location = soup.find('div', class_='map').find('iframe').get('src')
+        object.location = location[location.index('q=') + 2:location.index('&')].split(',')
+        object.location = list(map(lambda x: float(x), object.location))
+    except: pass
 
     #define style phone number
     phoneNumber = re.compile(r'''(\d{10})[0-9]?''', re.VERBOSE)
