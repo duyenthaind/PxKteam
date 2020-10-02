@@ -1,5 +1,6 @@
 import re
-
+from bs4 import BeautifulSoup
+import urllib.request
 
 def getDate(soup):
     return soup.find('span', class_="sp3").text
@@ -60,6 +61,8 @@ def addAttributesToObject(soup, object):
         elif row1.find('span', class_="r1").text == 'Tên dự án:':
             try: object.nameProject = row1.find('span', class_="r2").text.strip()
             except: pass
+            try: object.linkProject = 'https://batdongsan.com.vn' + row1.find('span', class_="r2").find('a').get('href')
+            except: pass
         elif row1.find('span', class_="r1").text == 'Quy mô:':
             try: object.size = row1.find('span', class_="r2").text.strip()
             except: pass
@@ -73,9 +76,16 @@ def addAttributesToObject(soup, object):
             try: object.acreage = li.find('span', class_="sp2").text
             except: pass
 
+    location = soup.find('div', class_='map').find('iframe').get('src')
+    object.location = location[location.index('q=') + 2:location.index('&')]
+
+    #define style phone number
     phoneNumber = re.compile(r'''(\d{10})[0-9]?''', re.VERBOSE)
     try: object.contact = phoneNumber.findall(object.description)
     except: pass
+    if object.linkProject != '':
+        try: object = getInfoProject(object)
+        except: pass
 
     return object
 
@@ -92,3 +102,30 @@ def getImages(soup):
     for i in range(len(images)):
         images[i] = images[i].find('img').get('src-lazy')
     return images
+
+
+def getInfoProject(object):
+    try:
+        page = urllib.request.urlopen(object.linkProject)
+    except:
+        return object
+    soup = BeautifulSoup(page, 'html.parser')
+    prj_is = soup.find_all('div', class_="prj-i")
+    for prj_i in prj_is:
+        if prj_i.find('div', class_="fl").text == 'Tên dự án':
+            try: object.nameProject = prj_i.find('div', class_="fr").text.strip()
+            except: pass
+        elif prj_i.find('div', class_="fl").text == 'Chủ đầu tư':
+            try: object.investor = prj_i.find('div', class_="fr").text.strip()
+            except: pass
+        elif prj_i.find('div', class_="fl").text == 'Địa chỉ':
+            try: object.address = prj_i.find('div', class_="fr").text.strip()
+            except: pass
+        elif prj_i.find('div', class_="fl").text == 'Quy mô dự án':
+            try: object.size = prj_i.find('div', class_="fr").text.strip()
+            except: pass
+        elif prj_i.find('div', class_="fl").text == 'Giá bán':
+            try: object.price = prj_i.find('div', class_="fr").text.strip()
+            except: pass
+    return object
+
