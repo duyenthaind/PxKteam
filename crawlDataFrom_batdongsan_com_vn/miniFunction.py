@@ -1,6 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 import urllib.request
+import math
+
 
 def getDate(soup):
     return soup.find('span', class_="sp3").text
@@ -64,7 +66,7 @@ def addAttributesToObject(soup, object):
             try: object.linkProject = 'https://batdongsan.com.vn' + row1.find('span', class_="r2").find('a').get('href')
             except: pass
         elif row1.find('span', class_="r1").text == 'Quy mô:':
-            try: object.size = row1.find('span', class_="r2").text.strip()
+            try: object.sizeProject = row1.find('span', class_="r2").text.strip()
             except: pass
 
     lis = soup.find('ul', class_="short-detail-2 clearfix pad-16").find_all('li')
@@ -79,6 +81,9 @@ def addAttributesToObject(soup, object):
         location = soup.find('div', class_='map').find('iframe').get('src')
         object.location = location[location.index('q=') + 2:location.index('&')].split(',')
         object.location = list(map(lambda x: float(x), object.location))
+    except: pass
+
+    try: object.farCenter = farCenter(object.location)
     except: pass
 
     #define style phone number
@@ -124,10 +129,18 @@ def getInfoProject(object):
             try: object.address = prj_i.find('div', class_="fr").text.strip()
             except: pass
         elif prj_i.find('div', class_="fl").text == 'Quy mô dự án':
-            try: object.size = prj_i.find('div', class_="fr").text.strip()
+            try: object.sizeProject = prj_i.find('div', class_="fr").text.strip()
             except: pass
         elif prj_i.find('div', class_="fl").text == 'Giá bán':
             try: object.price = prj_i.find('div', class_="fr").text.strip()
             except: pass
     return object
+
+
+def farCenter(location):
+    hoankiem = list(map(lambda x: math.radians(x), [21.028889, 105.8525]))
+    location = list(map(lambda x: math.radians(x), location))
+    return 6378 * math.acos((math.sin(location[0]) * math.sin(hoankiem[0]))
+                            + (math.cos(location[0]) * math.cos(hoankiem[0]) * math.cos(hoankiem[1] - location[1])))
+
 

@@ -16,10 +16,7 @@ class ProjectLand:
         self.nameProject = ''
         self.keyWords = []
         self.address = ''
-        self.size = ''
+        self.sizeProject = ''
         self.farCenter = 0
+        self.linkProject = ''
 
-    def information(self):
-        return f'''{self.date} - {self.images} - {self.acreage} - {self.contact} - {self.location} - \
-{self.investor} - {self.juridical} - {self.price}
-        '''

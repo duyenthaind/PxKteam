@@ -22,10 +22,6 @@ class Apartment:
         self.nameProject = ''
         self.keyWords = []
         self.address = ''
-        self.size = ''
+        self.sizeProject = ''
         self.farCenter = 0
-
-    def information(self):
-        return f'''{self.date} - {self.images} - {self.acreage} - {self.contact} - {self.location} - \
-{self.investor} - {self.juridical} - {self.price} - {self.numBedroom} - {self.numBathroom} - {self.directionHome} - \
-{self.directionBalcony} - {self.service} - {self.furniture}'''
+        self.linkProject = ''

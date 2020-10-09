@@ -3,6 +3,7 @@ from crawlDataFrom_batdongsan_com_vn.ProjectLand import ProjectLand
 from crawlDataFrom_batdongsan_com_vn.miniFunction import addAttributesToObject
 from bs4 import BeautifulSoup
 import urllib.request
+import csv
 
 
 def getListLinkApartmentOrProjectLandFromURL(url):
@@ -30,7 +31,7 @@ def getListLinkApartmentOrProjectLandFromURL(url):
 
 
 def getAllLinkApartmentsFromBDS_com_vn(urlApartmentOfHanoi='https://batdongsan.com.vn/ban-can-ho-chung-cu-ha-noi/p',
-                                       endPage=810):
+                                       endPage=750):
     '''
     :param endPage:
     :param urlApartmentOfHanoi: default = "https://batdongsan.com.vn/ban-can-ho-chung-cu-ha-noi/p"
@@ -50,7 +51,7 @@ def getAllLinkApartmentsFromBDS_com_vn(urlApartmentOfHanoi='https://batdongsan.c
 
 
 def getAllLinkProjectLandsFromBDS_com_vn(urlProjectLandsOfHanoi='https://batdongsan.com.vn/ban-dat-nen-du-an-ha-noi/p',
-                                         endPage=43):
+                                         endPage=38):
     '''
     :param endPage:
     :param urlApartmentOfHanoi: default = "https://batdongsan.com.vn/ban-dat-nen-du-an-ha-noi/p"
@@ -63,7 +64,6 @@ def getAllLinkProjectLandsFromBDS_com_vn(urlProjectLandsOfHanoi='https://batdong
         try:
             listLinkProjectLands += getListLinkApartmentOrProjectLandFromURL(urlProjectLandsOfHanoi
                                                                              + str(startPage))
-            print(len(listLinkProjectLands))
             startPage += 1
         except:
             continue
@@ -94,3 +94,36 @@ def handlingProjectLand(ProjectLandUrl):
     projectLand = ProjectLand()
     projectLand = addAttributesToObject(soup, projectLand)
     return projectLand
+
+
+def writeDataToCSV(apartmentList, projectLandList):
+    with open('data_crawl_from_web/apartments.csv', 'w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['tileProduct', 'date', 'images', 'acreage', 'contact', 'location', 'investor', 'juridical',
+                         'price', 'numBedroom', 'directionHome', 'directionBalcony', 'service', 'furniture',
+                         'numBathroom',
+                         'description', 'facade', 'wayIn', 'nameProject', 'keyWords', 'address', 'sizeProject',
+                         'farCenter',
+                         'linkProject'])
+        for apartment in apartmentList:
+            writer.writerow(
+                [apartment.tileProduct, apartment.date, apartment.images, apartment.acreage, apartment.contact,
+                 apartment.location, apartment.investor, apartment.juridical, apartment.price, apartment.numBedroom,
+                 apartment.directionHome, apartment.directionBalcony, apartment.service, apartment.furniture,
+                 apartment.numBathroom, apartment.description, apartment.facade, apartment.wayIn, apartment.nameProject,
+                 apartment.keyWords, apartment.address, apartment.sizeProject, apartment.farCenter,
+                 apartment.linkProject])
+
+
+    with open('data_crawl_from_web/projectLands.csv', 'w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['tileProduct', 'date', 'images', 'acreage', 'contact', 'location', 'investor', 'juridical',
+                         'price', 'description', 'facade', 'wayIn', 'nameProject', 'keyWords', 'address', 'sizeProject',
+                         'farCenter', 'linkProject'])
+        for projectLand in projectLandList:
+            writer.writerow(
+                [projectLand.tileProduct, projectLand.date, projectLand.images, projectLand.acreage, projectLand.contact,
+                 projectLand.location, projectLand.investor, projectLand.juridical, projectLand.price,
+                 projectLand.description, projectLand.facade, projectLand.wayIn, projectLand.nameProject,
+                 projectLand.keyWords, projectLand.address, projectLand.sizeProject, projectLand.farCenter,
+                 projectLand.linkProject])
